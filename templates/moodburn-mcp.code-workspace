@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"name": "moodburn-mcp",
+			"path": ".."
+		},
+		{
+			"name": ".venv",
+			"path": "../../../anaconda_projects/.venv"
+		},
+		{
+			"name": "__pycache__",
+			"path": "../../../anaconda_projects/__pycache__"
+		}
+	],
+	"settings": {}
+}
