@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoodBurn Academic Assistant</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/main.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="logo-container">
+                <i class="fas fa-fire logo-icon"></i>
+                <h1>Mood<span>Burn</span></h1>
+            </div>
+            <p class="tagline">Your emotion-aware academic productivity suite</p>
+        </header>
+
+        <main class="tool-container">
+            <div class="tool-selector-container">
+                <div class="selector-wrapper">
+                    <label for="tool">Select Tool:</label>
+                    <select id="tool" class="tool-select">
+                        <option value="mood">🔥 Mood Detector</option>
+                        <option value="study_plan">📅 Study Plan Generator</option>
+                        <option value="flashcards">🧠 Flashcards Creator</option>
+                        <option value="quiz">❓ Quiz Generator</option>
+                        <option value="summary">📄 Lecture Summarizer</option>
+                        <option value="todo">✅ To-Do Breaker</option>
+                        <option value="shuffle_tasks">🔀 Task Shuffler</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="input-container">
+                <textarea id="input" class="input-field" placeholder="Enter your text here..."></textarea>
+                <div class="examples">
+                    <p>Try these examples:</p>
+                    <ul>
+                        <li>"I'm feeling overwhelmed with calculus" (Mood Detector)</li>
+                        <li>"Unit 1: Photosynthesis; Exam in 2 weeks" (Study Plan)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <button id="submit" class="process-btn">
+                <i class="fas fa-bolt"></i> Process
+            </button>
+
+            <div class="output-container">
+                <div class="output-header">
+                    <h2><i class="fas fa-code"></i> Output</h2>
+                    <button id="copy-btn" class="copy-btn">
+                        <i class="far fa-copy"></i> Copy
+                    </button>
+                </div>
+                <pre id="output" class="output-field">Results will appear here...</pre>
+            </div>
+        </main>
+
+        <footer class="app-footer">
+            <p>Powered by OpenAI | Built for Puch AI Hackathon</p>
+        </footer>
+    </div>
+
+    <script>
+        document.getElementById('submit').addEventListener('click', async () => {
+            const tool = document.getElementById('tool').value;
+            const input = document.getElementById('input').value;
+            const output = document.getElementById('output');
+            const submitBtn = document.getElementById('submit');
+            
+            if (!input.trim()) {
+                output.textContent = "Please enter some text to process!";
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            output.textContent = "Processing your request...";
+
+            try {
+                const response = await fetch('/process', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ task: tool, text: input })
+                });
+                
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                output.textContent = `Error: ${error.message}`;
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-bolt"></i> Process';
+            }
+        });
+
+        document.getElementById('copy-btn').addEventListener('click', () => {
+            const output = document.getElementById('output');
+            navigator.clipboard.writeText(output.textContent)
+                .then(() => {
+                    const copyBtn = document.getElementById('copy-btn');
+                    copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                    setTimeout(() => {
+                        copyBtn.innerHTML = '<i class="far fa-copy"></i> Copy';
+                    }, 2000);
+                });
+        });
+    </script>
+</body>
+</html>
